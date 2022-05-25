@@ -6,7 +6,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
-/*@Component
+@Component
 class TypeModelAssembler implements RepresentationModelAssembler<Type, EntityModel<Type>> {
 
     @Override
@@ -16,4 +16,4 @@ class TypeModelAssembler implements RepresentationModelAssembler<Type, EntityMod
                 linkTo(methodOn(TypeController.class).one(type.getId())).withSelfRel(),
                 linkTo(methodOn(TypeController.class).all()).withRel("Type List"));
     }
-}*/
+}

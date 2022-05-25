@@ -6,7 +6,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
-/*@Component
+@Component
 class RegionModelAssembler implements RepresentationModelAssembler<Region, EntityModel<Region>> {
 
     @Override
@@ -16,4 +16,4 @@ class RegionModelAssembler implements RepresentationModelAssembler<Region, Entit
                 linkTo(methodOn(RegionController.class).one(region.getId())).withSelfRel(),
                 linkTo(methodOn(RegionController.class).all()).withRel("Region List"));
     }
-}*/
+}

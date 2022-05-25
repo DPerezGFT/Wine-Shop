@@ -6,7 +6,7 @@ import org.springframework.hateoas.EntityModel;
 import org.springframework.hateoas.server.RepresentationModelAssembler;
 import org.springframework.stereotype.Component;
 
-/*@Component
+@Component
 class WineryModelAssembler implements RepresentationModelAssembler<Winery, EntityModel<Winery>> {
 
     @Override
@@ -16,4 +16,4 @@ class WineryModelAssembler implements RepresentationModelAssembler<Winery, Entit
                 linkTo(methodOn(WineryController.class).one(winery.getId())).withSelfRel(),
                 linkTo(methodOn(WineryController.class).all()).withRel("Winery List"));
     }
-}*/
+}

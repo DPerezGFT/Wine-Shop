@@ -41,4 +41,45 @@ class TypeController {
 
         return assembler.toModel(type);
     }
+
+    @PostMapping("/types")
+    ResponseEntity<?> newType(@RequestBody Type newType) {
+
+        EntityModel<Type> entityModel = assembler.toModel(repository.save(newType));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @PutMapping("/types/{id}")
+    ResponseEntity<?> replaceType(@RequestBody Type newType, @PathVariable Long id) {
+
+        Type updatedType = repository.findById(id) //
+                .map(type -> {
+                    type.setName(newType.getName());
+                    return repository.save(type);
+                }) //
+                .orElseGet(() -> {
+                    newType.setId(id);
+                    return repository.save(newType);
+                });
+
+        EntityModel<Type> entityModel = assembler.toModel(updatedType);
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @DeleteMapping("/types/{id}")
+    ResponseEntity<?> deleteType(@PathVariable Long id) {
+
+        Type type = repository.findById(id) //
+                .orElseThrow(() -> new TypeNotFoundException(id));
+
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

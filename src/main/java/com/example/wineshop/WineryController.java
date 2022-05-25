@@ -41,4 +41,45 @@ class WineryController {
 
         return assembler.toModel(winery);
     }
+
+    @PostMapping("/wineries")
+    ResponseEntity<?> newType(@RequestBody Winery newWinery) {
+
+        EntityModel<Winery> entityModel = assembler.toModel(repository.save(newWinery));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @PutMapping("/wineries/{id}")
+    ResponseEntity<?> replaceWinery(@RequestBody Winery newWinery, @PathVariable Long id) {
+
+        Winery updatedWinery = repository.findById(id) //
+                .map(winery -> {
+                    winery.setName(newWinery.getName());
+                    return repository.save(winery);
+                }) //
+                .orElseGet(() -> {
+                    newWinery.setId(id);
+                    return repository.save(newWinery);
+                });
+
+        EntityModel<Winery> entityModel = assembler.toModel(updatedWinery);
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @DeleteMapping("/wineries/{id}")
+    ResponseEntity<?> deleteWinery(@PathVariable Long id) {
+
+        Winery winery = repository.findById(id) //
+                .orElseThrow(() -> new WineryNotFoundException(id));
+
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

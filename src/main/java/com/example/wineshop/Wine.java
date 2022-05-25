@@ -2,9 +2,7 @@ package com.example.wineshop;
 
 import java.util.Objects;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity
 public class Wine {
@@ -17,14 +15,20 @@ public class Wine {
     private double price;
     private String body;
     private String acidity;
-    private int type;
-    private int winery;
-    private int region;
+    @ManyToOne
+    @JoinColumn(name = "type")
+    private Type type;
+    @ManyToOne
+    @JoinColumn(name = "winery")
+    private Winery winery;
+    @ManyToOne
+    @JoinColumn(name = "region")
+    private Region region;
 
-    Wine() {
+    public Wine() {
     }
 
-    Wine(String name, String year, double rating, int num_reviews, double price, String body, String acidity, int winery, int type, int region) {
+    Wine(String name, String year, double rating, int num_reviews, double price, String body, String acidity, Winery winery, Type type, Region region) {
         this.name = name;
         this.year = year;
         this.rating = rating;
@@ -101,27 +105,27 @@ public class Wine {
         this.acidity = acidity;
     }
 
-    public int getType() {
-        return type;
+    public Type getType() {
+        return this.type;
     }
 
-    public void setType(int type) {
+    public void setType(Type type) {
         this.type = type;
     }
 
-    public int getWinery() {
+    public Winery getWinery() {
         return winery;
     }
 
-    public void setWinery(int winery) {
+    public void setWinery(Winery winery) {
         this.winery = winery;
     }
 
-    public int getRegion() {
+    public Region getRegion() {
         return region;
     }
 
-    public void setRegion(int region) {
+    public void setRegion(Region region) {
         this.region = region;
     }
 

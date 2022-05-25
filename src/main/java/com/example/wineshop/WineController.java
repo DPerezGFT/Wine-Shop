@@ -42,4 +42,43 @@ class WineController {
 
         return assembler.toModel(wine);
     }
+
+    @PostMapping("/wines")
+    ResponseEntity<?> newWine(@RequestBody Wine newWine) {
+
+        EntityModel<Wine> entityModel = assembler.toModel(repository.save(newWine));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @PutMapping("/wines/{id}")
+    ResponseEntity<?> replaceWine(@RequestBody Wine newWine, @PathVariable Long id) {
+
+        Wine updatedWine = repository.findById(id) //
+                .map(wine -> {
+                    wine.setName(newWine.getName());
+                    wine.setAcidity(newWine.getAcidity());
+                    wine.setBody(newWine.getBody());
+                    wine.setNum_reviews(newWine.getNum_reviews());
+                    wine.setPrice(newWine.getPrice());
+                    wine.setRating(newWine.getRating());
+                    wine.setRegion(newWine.getRegion());
+                    wine.setType(newWine.getType());
+                    wine.setWinery(newWine.getWinery());
+                    wine.setYear(newWine.getYear());
+                    return repository.save(wine);
+                }) //
+                .orElseGet(() -> {
+                    newWine.setId(id);
+                    return repository.save(newWine);
+                });
+
+        EntityModel<Wine> entityModel = assembler.toModel(updatedWine);
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
 }

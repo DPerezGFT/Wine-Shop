@@ -27,7 +27,10 @@ public class LoadDatabase {
 
         return args -> {
 
-            /*RowCallbackHandler callback = new RowCallbackHandler() {
+            /*
+            //BLOQUE DE COGIDO PARA CARGAR DATOS EN MARIADB
+
+            RowCallbackHandler callback = new RowCallbackHandler() {
                 @Override
                 public void processRow(ResultSet rs) throws SQLException {
                     typeRepository.save(new Type(rs.getString("type")));
@@ -79,6 +82,23 @@ public class LoadDatabase {
             };
 
             jdbcTemplate.query("select * from wines_spa", callback4);*/
+
+            Type aux1 = new Type("Brick");
+            typeRepository.save(aux1);
+            typeRepository.save(new Type("Espumoso"));
+
+            Winery aux2 = new Winery("Hacendado");
+            wineryRepository.save(aux2);
+            wineryRepository.save(new Winery("BonArea"));
+
+            Region aux3 = new Region("Malvarrosa", "España");
+            regionRepository.save(aux3);
+            regionRepository.save(new Region("Castelldefels", "España"));
+
+            //wineRepository.save(new Wine("sdfhsfdh", "2020", 2, 2, 2, "si soy", "tambien soy", aux2, aux1, aux3 ));
+
+
+
             log.info("Preload Complete");
 
         };

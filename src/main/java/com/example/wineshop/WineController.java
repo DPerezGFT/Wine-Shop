@@ -81,4 +81,15 @@ class WineController {
                 .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
                 .body(entityModel);
     }
+
+    @DeleteMapping("/wines/{id}")
+    ResponseEntity<?> deleteWine(@PathVariable Long id) {
+
+        Wine wine = repository.findById(id) //
+                .orElseThrow(() -> new WineNotFoundException(id));
+
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

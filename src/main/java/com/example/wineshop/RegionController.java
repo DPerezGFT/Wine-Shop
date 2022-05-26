@@ -42,4 +42,46 @@ class RegionController {
 
         return assembler.toModel(region);
     }
+
+    @PostMapping("/regions")
+    ResponseEntity<?> newRegion(@RequestBody Region newRegion) {
+
+        EntityModel<Region> entityModel = assembler.toModel(repository.save(newRegion));
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @PutMapping("/regions/{id}")
+    ResponseEntity<?> replaceRegion(@RequestBody Region newRegion, @PathVariable Long id) {
+
+        Region updatedRegion = repository.findById(id) //
+                .map(region -> {
+                    region.setName(newRegion.getName());
+                    region.setCountry(newRegion.getCountry());
+                    return repository.save(region);
+                }) //
+                .orElseGet(() -> {
+                    newRegion.setId(id);
+                    return repository.save(newRegion);
+                });
+
+        EntityModel<Region> entityModel = assembler.toModel(updatedRegion);
+
+        return ResponseEntity //
+                .created(entityModel.getRequiredLink(IanaLinkRelations.SELF).toUri()) //
+                .body(entityModel);
+    }
+
+    @DeleteMapping("/regions/{id}")
+    ResponseEntity<?> deleteRegion(@PathVariable Long id) {
+
+        Region region = repository.findById(id) //
+                .orElseThrow(() -> new RegionNotFoundException(id));
+
+        repository.deleteById(id);
+
+        return ResponseEntity.noContent().build();
+    }
 }

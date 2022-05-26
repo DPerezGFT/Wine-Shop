@@ -18,6 +18,9 @@ public class TypeControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private TypeRepository repository;
+
     @BeforeEach
     void setUp() {
     }
@@ -90,5 +93,24 @@ public class TypeControllerTest {
                 .uri("/types/Poteitos")
                 .exchange()
                 .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void deleteNonExistent(){
+        webTestClient.delete()
+                .uri("/types/404")
+                .exchange()
+                .expectStatus().isNotFound();
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+    }
+
+    @Test
+    void deleteOne(){
+        webTestClient.delete()
+                .uri("/types/2")
+                .exchange()
+                .expectStatus().isNoContent();
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+
     }
 }

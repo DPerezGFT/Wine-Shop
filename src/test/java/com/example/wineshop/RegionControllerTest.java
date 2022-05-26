@@ -18,6 +18,9 @@ public class RegionControllerTest {
     @Autowired
     private WebTestClient webTestClient;
 
+    @Autowired
+    private RegionRepository repository;
+
     @BeforeEach
     void setUp() {
     }
@@ -99,5 +102,24 @@ public class RegionControllerTest {
                 .uri("/regions/Poteitos")
                 .exchange()
                 .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void deleteNonExistent(){
+        webTestClient.delete()
+                .uri("/regions/404")
+                .exchange()
+                .expectStatus().isNotFound();
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+    }
+
+    @Test
+    void deleteOne(){
+        webTestClient.delete()
+                .uri("/regions/6")
+                .exchange()
+                .expectStatus().isNoContent();
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+
     }
 }

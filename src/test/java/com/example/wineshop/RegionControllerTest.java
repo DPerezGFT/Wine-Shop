@@ -77,7 +77,7 @@ public class RegionControllerTest {
                 .uri("/regions/5")
                 .exchange()
                 .expectBody()
-                .jsonPath("$.country").isEqualTo("España");
+                .jsonPath("$.country").isEqualTo("sdfhklnsdlosngdjhksfnd");
     }
 
     @Test
@@ -121,5 +121,97 @@ public class RegionControllerTest {
                 .expectStatus().isNoContent();
         repository.findAll().forEach(x -> System.out.println(x.toString()));
 
+    }@Test
+    void add() {
+        Region r = new Region("tipo test", "testilandia");
+        webTestClient.post()
+                .uri("/regions")
+                .bodyValue(r)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(7)
+                .jsonPath("$.name").isEqualTo("tipo test")
+                .jsonPath("$.country").isEqualTo("testilandia");
+    }
+
+    @Test
+    void addInjection() {
+        Region r = new Region("tipo test', 'testilandia'},{id: 8,name:'ijeccion test", "testilandia");
+        webTestClient.post()
+                .uri("/regions")
+                .bodyValue(r)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(8); // si se lanza por separado es 7
+        //.jsonPath("$.name").isEqualTo("tipo test");
+    }
+
+    @Test
+    void addNombreVacio() {
+        String name = null;
+        String country = null;
+        Region a = new Region(name, country);
+        webTestClient.post()
+                .uri("/regions")
+                .bodyValue(a)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name);
+
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+    }
+
+    @Test
+    void update() {
+        int id = 5;
+        String name = "asdiaasdiiuahsfagfiu";
+        String country = "sdfhklnsdlosngdjhksfnd";
+        Region a = new Region(name, country);
+        webTestClient.put()
+                .uri("/regions/" + id)
+                .bodyValue(a)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().valueEquals("Content-Type", "application/hal+json")
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name)
+                .jsonPath("@.country").isEqualTo(country)
+                .jsonPath("@.id").isEqualTo(id);
+    }
+
+    @Test
+    void updateIdIncorrecto() {
+        String id = "asd";
+        String name = "asdiaasdiiuahsfagfiu";
+        String country = "sdfhklnsdlosngdjhksfnd";
+        Region a = new Region(name, country);
+        webTestClient.put()
+                .uri("/regions/" + id)
+                .bodyValue(a)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void updateIdNoExistente() {
+        int id = 65;
+        String name = "asdiaasdiiuahsfagfiu";
+        String country = "sdfhklnsdlosngdjhksfnd";
+        Region a = new Region(name, country);
+        webTestClient.put()
+                .uri("/regions/" + id)
+                .bodyValue(a)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name)
+                .jsonPath("@.country").isEqualTo(country);
     }
 }

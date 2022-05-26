@@ -112,4 +112,91 @@ public class WineryControllerTest {
         repository.findAll().forEach(x -> System.out.println(x.toString()));
 
     }
+
+    @Test
+    void add() {
+        Winery w = new Winery("tipo test");
+        webTestClient.post()
+                .uri("/wineries")
+                .bodyValue(w)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(7)
+                .jsonPath("$.name").isEqualTo("tipo test");
+    }
+
+    @Test
+    void addInjection() {
+        Winery w = new Winery("tipo test'},{id: 8,name:'ijeccion test");
+        webTestClient.post()
+                .uri("/wineries")
+                .bodyValue(w)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(8); // si se lanza por separado es 7
+        //.jsonPath("$.name").isEqualTo("tipo test");
+    }
+
+    @Test
+    void addNombreVacio() {
+        String name = null;
+        Winery w = new Winery(name);
+        webTestClient.post()
+                .uri("/wineries")
+                .bodyValue(w)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name);
+
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+    }
+
+    @Test
+    void update() {
+        int id = 3;
+        String name = "asdiaasdiiuahsfagfiu";
+        Winery w = new Winery(name);
+        webTestClient.put()
+                .uri("/wineries/" + id)
+                .bodyValue(w)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().valueEquals("Content-Type", "application/hal+json")
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name)
+                .jsonPath("@.id").isEqualTo(id);
+    }
+
+    @Test
+    void updateIdIncorrecto() {
+        String id = "asd";
+        String name = "asdiaasdiiuahsfagfiu";
+        Winery w = new Winery(name);
+        webTestClient.put()
+                .uri("/wineries/" + id)
+                .bodyValue(w)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void updateIdNoExistente() {
+        int id = 65;
+        String name = "asdiaasdiiuahsfagfiu";
+        Winery w = new Winery(name);
+        webTestClient.put()
+                .uri("/wineries/" + id)
+                .bodyValue(w)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name);
+    }
 }

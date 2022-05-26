@@ -113,4 +113,91 @@ public class TypeControllerTest {
         repository.findAll().forEach(x -> System.out.println(x.toString()));
 
     }
+
+    @Test
+    void add() {
+        Type t = new Type("tipo test");
+        webTestClient.post()
+                .uri("/types")
+                .bodyValue(t)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(7)
+                .jsonPath("$.name").isEqualTo("tipo test");
+    }
+
+    @Test
+    void addInjection() {
+        Type t = new Type("tipo test'},{id: 8,name:'ijeccion test");
+        webTestClient.post()
+                .uri("/types")
+                .bodyValue(t)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("$.id").isEqualTo(8); // si se lanza por separado es 7
+        //.jsonPath("$.name").isEqualTo("tipo test");
+    }
+
+    @Test
+    void addNombreVacio() {
+        String name = null;
+        Type a = new Type(name);
+        webTestClient.post()
+                .uri("/types")
+                .bodyValue(a)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name);
+
+        repository.findAll().forEach(x -> System.out.println(x.toString()));
+    }
+
+    @Test
+    void update() {
+        int id = 1;
+        String name = "asdiaasdiiuahsfagfiu";
+        Type a = new Type(name);
+        webTestClient.put()
+                .uri("/types/" + id)
+                .bodyValue(a)
+                .exchange()
+                .expectStatus().isCreated()
+                .expectHeader().valueEquals("Content-Type", "application/hal+json")
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name)
+                .jsonPath("@.id").isEqualTo(id);
+    }
+
+    @Test
+    void updateIdIncorrecto() {
+        String id = "asd";
+        String name = "asdiaasdiiuahsfagfiu";
+        Type a = new Type(name);
+        webTestClient.put()
+                .uri("/types/" + id)
+                .bodyValue(a)
+                .exchange()
+                .expectStatus().isBadRequest();
+    }
+
+    @Test
+    void updateIdNoExistente() {
+        int id = 65;
+        String name = "asdiaasdiiuahsfagfiu";
+        Type a = new Type(name);
+        webTestClient.put()
+                .uri("/types/" + id)
+                .bodyValue(a)
+                .exchange()
+                .expectStatus()
+                .isCreated()
+                .expectBody()
+                .jsonPath("@.name").isEqualTo(name);
+    }
 }
